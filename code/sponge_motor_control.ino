@@ -11,8 +11,8 @@
  */
 
 // defines pins numbers
-const int stepPin = 3;
-const int dirPin = 4;
+const int dirPin = 3;
+const int stepPin = 4;
 const int enPin = 5;
 
 boolean state = false;
@@ -23,7 +23,10 @@ float des_pressing_dist;
 float pressing_rots;
 int pressing_steps;
 
+float step_mode = 1;
+
 int loop_count = 1;
+int delay_steps = round(500/step_mode);
 int dealay = 10;
  
 char val = "s";
@@ -43,7 +46,6 @@ void loop() {
   state = false;
   if (Serial.available()) {
     val = Serial.read();
-    
     while(val == 'r'){
        
       //if (state == false) {
@@ -55,7 +57,7 @@ void loop() {
         //this should take ~ 0.875 s
 
         des_pressing_dist = 35;
-        pressing_rots = des_pressing_dist/mm_per_rev;
+        pressing_rots = des_pressing_dist/mm_per_rev*step_mode;
         pressing_steps = pressing_rots*steps_per_rev;
         //Serial.print(pressing_steps);
         
@@ -64,9 +66,9 @@ void loop() {
         digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
         for(int x = 0; x < pressing_steps; x++) {
           digitalWrite(stepPin,HIGH);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
           digitalWrite(stepPin,LOW);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
         }
         delay(dealay);
        
@@ -75,9 +77,9 @@ void loop() {
         // Makes 400 pulses for making two full cycle rotation
         for(int x = 0; x < pressing_steps; x++) {
           digitalWrite(stepPin,HIGH);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
           digitalWrite(stepPin,LOW);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
         }
         delay(dealay);
         
@@ -102,16 +104,16 @@ void loop() {
       
       des_pressing_dist = 1;
       //Serial.print(des_pressing_dist);
-      pressing_rots = des_pressing_dist/mm_per_rev;
+      pressing_rots = des_pressing_dist/mm_per_rev*step_mode;
       //Serial.print(pressing_rots);
       pressing_steps = pressing_rots*steps_per_rev;
       //Serial.print(pressing_steps);
       digitalWrite(dirPin,HIGH);
       for(int x = 0; x < pressing_steps; x++) {
           digitalWrite(stepPin,HIGH);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
           digitalWrite(stepPin,LOW);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
         }
       digitalWrite(LED_BUILTIN, LOW);
     }
@@ -123,16 +125,58 @@ void loop() {
       
       des_pressing_dist = 1;
       //Serial.print(des_pressing_dist);
-      pressing_rots = des_pressing_dist/mm_per_rev;
+      pressing_rots = des_pressing_dist/mm_per_rev*step_mode;
       //Serial.print(pressing_rots);
       pressing_steps = pressing_rots*steps_per_rev;
       //Serial.print(pressing_steps);
       digitalWrite(dirPin,LOW);
       for(int x = 0; x < pressing_steps; x++) {
           digitalWrite(stepPin,HIGH);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
           digitalWrite(stepPin,LOW);
-          delayMicroseconds(500);
+          delayMicroseconds(delay_steps);
+        }
+      digitalWrite(LED_BUILTIN, LOW);
+    }
+    if(val == 't'){
+      // move inside (towards) 10 mm
+      Serial.print("towards 1mm\n");
+      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(enPin, LOW);
+      
+      des_pressing_dist = 10;
+      //Serial.print(des_pressing_dist);
+      pressing_rots = des_pressing_dist/mm_per_rev*step_mode;
+      //Serial.print(pressing_rots);
+      pressing_steps = pressing_rots*steps_per_rev;
+      //Serial.print(pressing_steps);
+      digitalWrite(dirPin,HIGH);
+      for(int x = 0; x < pressing_steps; x++) {
+          digitalWrite(stepPin,HIGH);
+          delayMicroseconds(delay_steps);
+          digitalWrite(stepPin,LOW);
+          delayMicroseconds(delay_steps);
+        }
+      digitalWrite(LED_BUILTIN, LOW);
+    }
+    if(val == 'a'){
+      // move outside (away) 10 mm
+      Serial.print("away 1mm\n");
+      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(enPin, LOW);
+      
+      des_pressing_dist = 10;
+      //Serial.print(des_pressing_dist);
+      pressing_rots = des_pressing_dist/mm_per_rev*step_mode;
+      //Serial.print(pressing_rots);
+      pressing_steps = pressing_rots*steps_per_rev;
+      //Serial.print(pressing_steps);
+      digitalWrite(dirPin,LOW);
+      for(int x = 0; x < pressing_steps; x++) {
+          digitalWrite(stepPin,HIGH);
+          delayMicroseconds(delay_steps);
+          digitalWrite(stepPin,LOW);
+          delayMicroseconds(delay_steps);
         }
       digitalWrite(LED_BUILTIN, LOW);
     }
