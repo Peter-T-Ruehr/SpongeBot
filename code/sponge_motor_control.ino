@@ -25,21 +25,19 @@ const int dirPin = 3;
 const int stepPin = 4;
 const int enPin = 5;
 
-boolean state = false;
 
-int steps_per_rev = 200;
+float step_mode = 4;
+int delay_steps = round(500/step_mode);
+int delay_pause = 100;
+
+int steps_per_rev = 200*step_mode;
 int mm_per_rev = 8;
 float des_pressing_dist;
 float pressing_rots;
 int pressing_steps;
 
-int curr_delay;
-
-// float step_mode = 1;
 
 int loop_count = 1;
-int delay_steps = 700; // round(500/step_mode);
-int dealay = 10;
  
 String val = "s";
 String val_inside = "s";
@@ -47,6 +45,7 @@ String input = "s";
 
 String readString;
 int iterations = 1;
+int dist;
 
 void setup() {
   // Sets the two pins as Outputs
@@ -59,7 +58,6 @@ void setup() {
 
 }
 void loop() {
-  state = false;
   while (Serial.available()) {
     delay(2);  //delay to allow byte to arrive in input buffer
     char c = Serial.read();
@@ -68,14 +66,16 @@ void loop() {
   
   if (readString.length() > 0) {
     input = readString;
-    Serial.println(input);
+    //Serial.println(input);
     readString="";
 
     if(input.startsWith("r")){
       val = input.substring(0, 1);
-      //Serial.println(val);
-      iterations = input.substring(1, input.length()).toInt();
-      //Serial.println(iterations);
+      // Serial.println(val);
+      iterations = input.substring(1, 5).toInt();
+      // Serial.println(iterations);
+      dist = input.substring(5, input.length()).toInt();
+      // Serial.println(dist);
     } else{
       val = input;
     }
@@ -85,15 +85,10 @@ void loop() {
       Serial.print(iterations);
       Serial.print('\n');
       for(int loop_count = 1; loop_count <= iterations; loop_count++) {
-        //if (state == false) {
           digitalWrite(LED_BUILTIN, HIGH);
-          if(state == false){
-            Serial.print("running...\n");
-            state = true;
-          }
           //this should take ~ 0.875 s
   
-          des_pressing_dist = 35;
+          des_pressing_dist = dist;
           pressing_rots = des_pressing_dist/mm_per_rev; // *step_mode;
           pressing_steps = pressing_rots*steps_per_rev;
           //Serial.print(pressing_steps);
@@ -102,13 +97,13 @@ void loop() {
           digitalWrite(enPin, LOW);
           digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
           for(int x = 0; x < pressing_steps; x++) {
-            curr_delay = delay_steps; // delay_steps + round(delay_steps/2) - x;
+            // curr_delay = delay_steps; // delay_steps + round(delay_steps/2) - x;
             digitalWrite(stepPin,HIGH);
-            delayMicroseconds(curr_delay);
+            delayMicroseconds(delay_steps);
             digitalWrite(stepPin,LOW);
-            delayMicroseconds(curr_delay);
+            delayMicroseconds(delay_steps);
           }
-          delay(dealay);
+          delay(delay_pause);
          
           //Serial.print("release\n");
           digitalWrite(dirPin,LOW); //Changes the rotations direction
@@ -119,7 +114,7 @@ void loop() {
             digitalWrite(stepPin,LOW);
             delayMicroseconds(delay_steps);
           }
-          delay(dealay);
+          delay(delay_pause);
           
           while (Serial.available()) {
             delay(2);  //delay to allow byte to arrive in input buffer
@@ -134,7 +129,6 @@ void loop() {
               val = "s";
               loop_count = iterations;
               Serial.print("stopping.\n");
-              //state = false;
               digitalWrite(LED_BUILTIN, LOW);
             }
           }
@@ -142,7 +136,9 @@ void loop() {
           Serial.print(loop_count);
           Serial.println();
       }
-      Serial.print("All done!");
+      Serial.print("All done!\n");
+      Serial.print("de-energizing steppers");
+      digitalWrite(enPin, HIGH);
       Serial.println();
     }
     if(val == "i"){
