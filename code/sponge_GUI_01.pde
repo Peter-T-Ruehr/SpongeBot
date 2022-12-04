@@ -5,6 +5,7 @@ Serial port;
 String COM = "COM7";
 String val;    // read serial port
 String num;
+String dist;
 int send;
 float f;
 
@@ -82,6 +83,12 @@ void setup(){ //Same as setup in arduino
     .setSize(button_width, button_height)
     .setFont(font)
     .setAutoClear(false); 
+    
+  cp5.addTextfield("distance")
+    .setPosition(button_pos_x_r, button_height*r+button_dist*(r-1))
+    .setSize(button_width, button_height)
+    .setFont(font)
+    .setAutoClear(false); 
 
   size(430, 450);                          //Window size, (width, height)
   port = new Serial(this, COM, 9600);   //Change this to your port
@@ -101,14 +108,21 @@ void draw(){  //Same as loop in arduino
 }
 
 void run(){
+  // iterations
   num = cp5.get(Textfield.class,"iterations").getText();
   // if num or n2 is less than 4 digits add a zero to the front of them.
    while (num.length() < 4){
      num = '0' + num;
    }
-   print("submitted " + num + " iterations to the test stand.");
+   // distance
+  dist = cp5.get(Textfield.class,"distance").getText();
+  // if num or n2 is less than 4 digits add a zero to the front of them.
+   while (dist.length() < 4){
+     dist = '0' + dist;
+   }
+   print("submitted " + num + " iterations with a distance of " + dist + " mm to the test stand.");
   //println();
-  port.write('r'+num);
+  port.write('r'+num+dist);
 }
 void stop(){
   port.write('s');
