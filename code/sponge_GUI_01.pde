@@ -2,7 +2,10 @@ import controlP5.*; //import ControlP5 library
 import processing.serial.*;
 
 Serial port;
+String COM = "COM7";
 String val;    // read serial port
+String num;
+int send;
 float f;
 
 ControlP5 cp5; //create ControlP5 object
@@ -16,7 +19,6 @@ void setup(){ //Same as setup in arduino
   int button_dist = 10;
   int button_pos_x_l = 90;
   int button_pos_x_r = button_pos_x_l+button_width+button_dist;
-  int button_pos_y = 100;
  
   int r = 1;
   
@@ -72,9 +74,17 @@ void setup(){ //Same as setup in arduino
     .setPosition(button_pos_x_l, button_height*r+button_dist*(r-1))  //x and y coordinates of upper left corner of button
     .setSize(button_width, button_height)      //(width, height)
     .setFont(font)
-  ; 
-  size(430, 350);                          //Window size, (width, height)
-  port = new Serial(this, "COM4", 9600);   //Change this to your port
+  ;
+  
+  r = 5;
+  cp5.addTextfield("iterations")
+    .setPosition(button_pos_x_l, button_height*r+button_dist*(r-1))
+    .setSize(button_width, button_height)
+    .setFont(font)
+    .setAutoClear(false); 
+
+  size(430, 450);                          //Window size, (width, height)
+  port = new Serial(this, COM, 9600);   //Change this to your port
 }
 
 void draw(){  //Same as loop in arduino
@@ -91,7 +101,14 @@ void draw(){  //Same as loop in arduino
 }
 
 void run(){
-  port.write('r');
+  num = cp5.get(Textfield.class,"iterations").getText();
+  // if num or n2 is less than 4 digits add a zero to the front of them.
+   while (num.length() < 4){
+     num = '0' + num;
+   }
+   print("submitted " + num + " iterations to the test stand.");
+  //println();
+  port.write('r'+num);
 }
 void stop(){
   port.write('s');
