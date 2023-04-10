@@ -2,7 +2,7 @@ import controlP5.*; //import ControlP5 library
 import processing.serial.*;
 
 Serial port;
-String COM = "COM7";
+String COM = "COM4";
 String val;    // read serial port
 String num;
 String dist;
@@ -42,24 +42,24 @@ void setup(){ //Same as setup in arduino
   ; 
   
   r = 2;
-  cp5.addButton("towards_1mm")  //The button
+  cp5.addButton("up_1mm")  //The button
     .setPosition(button_pos_x_l, button_height*r+button_dist*(r-1))  //x and y coordinates of upper left corner of button
     .setSize(button_width, button_height)      //(width, height)
     .setFont(font)
   ; 
-  cp5.addButton("away_1mm")  //The button
+  cp5.addButton("down_1mm")  //The button
     .setPosition(button_pos_x_r, button_height*r+button_dist*(r-1))  //x and y coordinates of upper left corner of button
     .setSize(button_width, button_height)      //(width, height)
     .setFont(font)
   ; 
   
   r = 3;
-  cp5.addButton("towards_10mm")  //The button
+  cp5.addButton("up_10mm")  //The button
     .setPosition(button_pos_x_l, button_height*r+button_dist*(r-1))  //x and y coordinates of upper left corner of button
     .setSize(button_width, button_height)      //(width, height)
     .setFont(font)
   ; 
-  cp5.addButton("away_10mm")  //The button
+  cp5.addButton("down_10mm")  //The button
     .setPosition(button_pos_x_r, button_height*r+button_dist*(r-1))  //x and y coordinates of upper left corner of button
     .setSize(button_width, button_height)      //(width, height)
     .setFont(font)
@@ -127,16 +127,16 @@ void run(){
 void stop(){
   port.write('s');
 }
-void towards_1mm(){
+void up_1mm(){
   port.write('i');
 }
-void away_1mm(){
+void down_1mm(){
   port.write('o');
 }
-void towards_10mm(){
+void up_10mm(){
   port.write('t');
 }
-void away_10mm(){
+void down_10mm(){
   port.write('a');
 }
 void de_energize(){
