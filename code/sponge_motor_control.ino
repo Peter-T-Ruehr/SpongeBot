@@ -21,13 +21,13 @@
 #include <ctype.h>
 
 // defines pins numbers
-const int dirPin = 3;
+const int dirPin = 3; // LOW = up; HIGH = down
 const int stepPin = 4;
 const int enPin = 5;
 
 
-float step_mode = 4;
-int delay_steps = round(500/step_mode);
+float step_mode = 4; // MS2 == HIGH
+int delay_steps = round(2000/step_mode);
 int delay_pause = 100;
 
 int steps_per_rev = 200*step_mode;
@@ -136,6 +136,18 @@ void loop() {
           Serial.print(loop_count);
           Serial.println();
       }
+
+      //get press up again
+      digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
+        for(int x = 0; x < pressing_steps; x++) {
+          // curr_delay = delay_steps; // delay_steps + round(delay_steps/2) - x;
+          digitalWrite(stepPin,HIGH);
+          delayMicroseconds(delay_steps);
+          digitalWrite(stepPin,LOW);
+          delayMicroseconds(delay_steps);
+        }
+      delay(delay_pause);
+          
       Serial.print("All done!\n");
       Serial.print("de-energizing steppers");
       digitalWrite(enPin, HIGH);
