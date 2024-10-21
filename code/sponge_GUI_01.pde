@@ -3,8 +3,9 @@ import processing.serial.*;
 
 Serial port;
 String COM = "COM4";
-String val;    // read serial port
-String num;
+String val = "1";    // read serial port
+String num = "1";
+// String curr_iteration = "1";
 String dist;
 int send;
 float f;
@@ -22,6 +23,7 @@ void setup(){ //Same as setup in arduino
   int button_pos_x_r = button_pos_x_l+button_width+button_dist;
  
   int r = 1;
+  
   
   cp5 = new ControlP5(this);
   
@@ -89,8 +91,17 @@ void setup(){ //Same as setup in arduino
     .setSize(button_width, button_height)
     .setFont(font)
     .setAutoClear(false); 
+    
+  r = 6;  
+  // Create a textlabel
+  cp5.addTextlabel("dynamicLabel")
+     .setText("curr. iteratuion: " + val)
+     .setPosition(button_pos_x_l, button_height*r+button_dist*(r-1)+17)
+     .setFont(createFont("Arial", 20))
+     .setColor(color(255, 255, 255));
+     
 
-  size(430, 450);                          //Window size, (width, height)
+  size(430, 500);                          //Window size, (width, height)
   port = new Serial(this, COM, 9600);   //Change this to your port
 }
 
@@ -103,6 +114,9 @@ void draw(){  //Same as loop in arduino
     val = port.readStringUntil('\n'); 
     if ( val != null ){
       println(val);
+      // Update the label with the sensor value
+      cp5.get(Textlabel.class, "dynamicLabel").setText("curr. iteration: " + val + " / " + int(num));
+  // }
     }
   }
 }
@@ -120,8 +134,7 @@ void run(){
    while (dist.length() < 4){
      dist = '0' + dist;
    }
-   print("submitted " + num + " iterations with a distance of " + dist + " mm to the test stand.");
-  //println();
+   print("submitting " + num + " iterations with a distance of " + dist + " mm to the test stand...");
   port.write('r'+num+dist);
 }
 void stop(){
