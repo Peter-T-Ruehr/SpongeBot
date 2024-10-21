@@ -19,6 +19,9 @@
   * Vref = 1.36 * 8 * 0.1 = 1.09V
   */
 #include <ctype.h>
+//
+int delay_base = 3000;
+
 
 // defines pins numbers
 const int dirPin = 3; // LOW = up; HIGH = down
@@ -27,7 +30,7 @@ const int enPin = 5;
 
 
 float step_mode = 4; // MS2 == HIGH
-int delay_steps = round(2000/step_mode);
+int delay_steps = round(delay_base/step_mode);
 int delay_pause = 100;
 
 int steps_per_rev = 200*step_mode;
@@ -85,6 +88,7 @@ void loop() {
       Serial.print(iterations);
       Serial.print('\n');
       for(int loop_count = 1; loop_count <= iterations; loop_count++) {
+          Serial.println(loop_count);
           digitalWrite(LED_BUILTIN, HIGH);
           //this should take ~ 0.875 s
   
@@ -134,7 +138,7 @@ void loop() {
           }
           Serial.print("Loop iteration: ");
           Serial.print(loop_count);
-          Serial.println();
+          Serial.println(loop_count);
       }
 
       //get press up again
@@ -152,10 +156,12 @@ void loop() {
       Serial.print("de-energizing steppers");
       digitalWrite(enPin, HIGH);
       Serial.println();
+      Serial.print("Test finished!");
+      Serial.println();
     }
     if(val == "i"){
       // move inside 1 mm
-      Serial.print("towards 1mm\n");
+      Serial.print("up 1mm\n");
       digitalWrite(LED_BUILTIN, HIGH);
       digitalWrite(enPin, LOW);
       
@@ -176,7 +182,7 @@ void loop() {
     }
     if(val == "o"){
       // move outside 1 mm
-      Serial.print("away 1mm\n");
+      Serial.print("down 1mm\n");
       digitalWrite(LED_BUILTIN, HIGH);
       digitalWrite(enPin, LOW);
       
@@ -196,8 +202,8 @@ void loop() {
       digitalWrite(LED_BUILTIN, LOW);
     }
     if(val == "t"){
-      // move inside (towards) 10 mm
-      Serial.print("towards 1mm\n");
+      // move inside (up) 10 mm
+      Serial.print("up 1mm\n");
       digitalWrite(LED_BUILTIN, HIGH);
       digitalWrite(enPin, LOW);
       
@@ -217,8 +223,8 @@ void loop() {
       digitalWrite(LED_BUILTIN, LOW);
     }
     if(val == "a"){
-      // move outside (away) 10 mm
-      Serial.print("away 1mm\n");
+      // move outside (down) 10 mm
+      Serial.print("down 1mm\n");
       digitalWrite(LED_BUILTIN, HIGH);
       digitalWrite(enPin, LOW);
       
